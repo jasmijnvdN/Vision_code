@@ -70,18 +70,16 @@ while True:
                 number_of_vertices = len(approx)
                 if number_of_vertices == 3 or number_of_vertices == 4:  #3 for triangles 4 for squares
                     cv2.drawContours(mask, [cnt], -1, 255, thickness=cv2.FILLED)
-
-            
+                    
                     area = cv2.contourArea(cnt)#area
                     if area > max_area:
                         max_area = area  # Update the maximum area
-                     
-                        # Calculate the center 
+                        
                         M = cv2.moments(cnt)
-                        if M['m00'] != 0:  
-                            centroid = (int(M['m10'] / M['m00']), int(M['m01'] / M['m00']))
+                        if M['m00'] != 0:  #zodat er niet gedeeld word door 0
+                            center_of_shape = (int(M['m10'] / M['m00']), int(M['m01'] / M['m00'])) #m10 voor x m01 voor y
+                            #geeft coordinaten voor het midden
 
-                  
                         rightmost_pixel = tuple(cnt[cnt[:, :, 0].argmax()][0])  # Rightmost point of the contour
 
                         #midden van bloje bepalen
@@ -90,8 +88,8 @@ while True:
                         shape_centers.append(center)
                         
             # Calculate the line between the centroid and the rightmost pixel
-            dx = abs(rightmost_pixel[0] - centroid[0])  
-            dy = abs(rightmost_pixel[1] - centroid[1])  
+            dx = abs(rightmost_pixel[0] - center_of_shape[0])  
+            dy = abs(rightmost_pixel[1] - center_of_shape[1])  
             line_length = int(np.sqrt(dx ** 2 + dy ** 2))  #pythagoras
             
             
@@ -132,15 +130,14 @@ while True:
                 epsilon = 0.05 * cv2.arcLength(cnt, True)
                 approx = cv2.approxPolyDP(cnt, epsilon, True)
 
-                num_vertices = len(approx)
+                number_of_vertices = len(approx)
                 shape_name = ""
                 color = (0, 0, 0) #zwart.
 
-              
                 area = cv2.contourArea(cnt)# area uitgedrukt in pixels
-                if area < 100: #ruis in achterdrond vermijden en alleen de grootste vorm nemen
+                if area < 200: #ruis in achterdrond vermijden en kleine vormen negeren 
                     continue
-
+#
             shape_name = "Square"
             if 92000 <= area <= 92500: #hoeveel heid pixels die gedetecteerd kunnen worden
                 color = (0,255,0)  
@@ -166,40 +163,29 @@ while True:
             else:
                 continue 
 
-    
-                cv2.drawContours(output_img, [approx], -1, color, 2)
+                cv2.drawContours(show_image, [approx], -1, color, 2)
                 x, y, w, h = cv2.boundingRect(approx)
             
-                cv2.putText(output_img, f"{shape_name}: {area:.2f} px", (x, y - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            print("Maximale area:", max_area:.2f," pixels")
 
-            print(f"Maximum area found: {max_area:.2f} pixels")
-
+            cv2.line(show_image, center_of_shape, rightmost_pixel, (0, 255, 0, 2)) 
+            cv2.line(show_image, center_of_shape, (rightmost_pixel[0], centroid[1]), (0, 255,0) )#lijn van y 
+            cv2.line(show_image, center_of_shape, (centroid[0], rightmost_pixel[1]), (0,255,0), 2) #lijn van x
             
-            cv2.line(output_img, centroid, rightmost_pixel, (0, 255, 0, 2)) 
-            cv2.line(output_img, centroid, (rightmost_pixel[0], centroid[1]), (0, 255,0) )
-            cv2.line(output_img, centroid, (centroid[0], rightmost_pixel[1]), (0,255,0), 2) 
-
-          
             for center in shape_centers:
-                cv2.circle(output_img, center, 10, (0, 255, 0), -1)  #groene punt in het midden aantonen
+                cv2.circle(show_image, center, 5, (0, 255, 0), -1)  #groene punt in het midden aantonen 5=radius van circkel, 
 
-   
-            cv2.imshow("Detected Shapes with Lines", output_img)# foto met lijnen
+            cv2.imshow("Detected Shapes with Lines", show_image)# foto met lijnen
 
-         
-            plt.subplot(121), plt.imshow(cv2.cvtColor(final_img, cv2.COLOR_BGR2RGB))
-            plt.title('Blurred Background'), plt.xticks([]), plt.yticks([])
-            plt.subplot(122), plt.imshow(cv2.cvtColor(output_img, cv2.COLOR_BGR2RGB))
-            plt.title('Detected Shapes with Lines'), plt.xticks([]), plt.yticks([])
+            plt.subplot(121), plt.imshow(cv2.cvtColor(final_imgage, cv2.COLOR_BGR2RGB))
+            plt.title('Geblurde achtergrond'), plt.xticks([]), plt.yticks([])#laat foto met geblurede achtergrond zien
+            plt.subplot(122), plt.imshow(cv2.cvtColor(show_image, cv2.COLOR_BGR2RGB))
+            plt.title('Gevonden shapes met lijnen'), plt.xticks([]), plt.yticks([])#laat gevonden shapes zien
 
             plt.show()
 
         elif key == 27:  # Exit on ESC
             break
-    else:
-        print("Failed to read from webcam. Exiting.")
-        break
 
 webcam.release()
 cv2.destroyAllWindows()
