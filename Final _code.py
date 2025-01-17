@@ -21,10 +21,10 @@ def write_lreal_db(db_number, start_address, value):
     plc.db_write(db_number, start_address, bytearray(struct.pack('>d', value)))  
     return None
 
-def write_bool(db_number, start_offset, bit_offset, value):  # To write 1 bit to a specific variable in a DB
-    reading = plc.db_read(db_number, start_offset, 1)  # (db number, start offset, read 1 byte)
-    snap7.util.set_bool(reading, 0, bit_offset, value)  # (value 1= true;0=false) (bytearray_: bytearray, byte_index: int, bool_index: int, value: bool)
-    plc.db_write(db_number, start_offset, reading)  # write back the bytearray and now the boolean value is changed in the PLC.
+def write_bool(db_number, start_offset, bit_offset, value):  
+    reading = plc.db_read(db_number, start_offset, 1)  
+    snap7.util.set_bool(reading, 0, bit_offset, value)  
+    plc.db_write(db_number, start_offset, reading)  
     return None
 
 def read_bool(db_number, start_offset, bit_offset):  
@@ -95,7 +95,7 @@ while True:
             line_length = int(np.sqrt(dx ** 2 + dy ** 2))  #pythagoras
             
             
-            # print("Line Length:", line_length ,"pixels")
+            # print("Line Length:", line_length ,"pixels") test
             # print("X:", dx, "pixels")
             # print("Y:",dy, "pixels")
             dx_length_in_mm= dx/4
@@ -138,13 +138,11 @@ while True:
 
               
                 area = cv2.contourArea(cnt)# area uitgedrukt in pixels
-
-          
                 if area < 100: #ruis in achterdrond vermijden en alleen de grootste vorm nemen
                     continue
 
             shape_name = "Square"
-            if 92000 <= area <= 92500: #hoeveel hied pixels die gedetecteerd kunnen worden
+            if 92000 <= area <= 92500: #hoeveel heid pixels die gedetecteerd kunnen worden
                 color = (0,255,0)  
                 print("square detected")
                 write_bool(22, 2, 0, 1) #offset nog aanpassen
