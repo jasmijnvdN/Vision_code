@@ -65,7 +65,7 @@ while True:
             
             for cnt in contours:
                 epsilon = 0.05 * cv2.arcLength(cnt, True)
-                approx = cv2.approxPolyDP(cnt, epsilon, True)
+                approx = cv2.approxPolyDP(cnt, epsilon, True)#v2.approxPolyDP good for approxomating shapes
 
                 number_of_vertices = len(approx)
                 if number_of_vertices == 3 or number_of_vertices == 4:  #3 for triangles 4 for squares
@@ -77,7 +77,7 @@ while True:
                         
                         M = cv2.moments(cnt)
                         if M['m00'] != 0:  #zodat er niet gedeeld word door 0
-                            center_of_shape = (int(M['m10'] / M['m00']), int(M['m01'] / M['m00'])) #m10 voor x m01 voor y
+                            midden = (int(M['m10'] / M['m00']), int(M['m01'] / M['m00'])) #m10 voor x m01 voor y
                             #geeft coordinaten voor het midden
 
                         rightmost_pixel = tuple(cnt[cnt[:, :, 0].argmax()][0])  # Rightmost point of the contour
@@ -168,9 +168,9 @@ while True:
             
             print("Maximale area:", max_area:.2f," pixels")
 
-            cv2.line(show_image, center_of_shape, rightmost_pixel, (0, 255, 0, 2)) 
-            cv2.line(show_image, center_of_shape, (rightmost_pixel[0], centroid[1]), (0, 255,0) )#lijn van y 
-            cv2.line(show_image, center_of_shape, (centroid[0], rightmost_pixel[1]), (0,255,0), 2) #lijn van x
+            cv2.line(show_image, midden, rightmost_pixel, (0, 255, 0, 2)) 
+            cv2.line(show_image, midden, (rightmost_pixel[0], centroid[1]), (0, 255,0) )#lijn van y 
+            cv2.line(show_image, midden, (centroid[0], rightmost_pixel[1]), (0,255,0), 2) #lijn van x
             
             for center in shape_centers:
                 cv2.circle(show_image, center, 5, (0, 255, 0), -1)  #groene punt in het midden aantonen 5=radius van circkel, 
