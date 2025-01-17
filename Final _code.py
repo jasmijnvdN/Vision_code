@@ -37,7 +37,7 @@ cv2. WINDOW_AUTOSIZE
 cv2.namedWindow("webcam", cv2.WINDOW_AUTOSIZE)
 
 cv2.moveWindow("webcam",100,000) 
-webcam = cv2.VideoCapture(1) #1 werkt voor usb port, 0 voor camera in laptop
+webcam = cv2.VideoCapture(1) #1 for usb port, 0 for camera in laptop
 
 webcam.set(cv2.CAP_PROP_FRAME_WIDTH,1920)  #dimensions (don't change it!)
 webcam.set(cv2.CAP_PROP_FRAME_HEIGHT,1080)
@@ -111,7 +111,7 @@ while True:
             x_coordinaat_van_midden= x_coordinaat_voor_meest_rechter_pixel + dx_length_in_mm
             y_coordinaat_van_midden=y_coordinaat_voor_meest_rechter_pixel + dy_length_in_mm
             
-            write_lreal_db(22, 16, x_coordinaat_van_midden )#send pixel to PLC(misschien x en y nog omdraaien)
+            write_lreal_db(22, 16, x_coordinaat_van_midden )#send pixel to PLC(maybe swap  x en y )
             write_lreal_db(22, 24, y_coordinaat_van_midden )
             print("x_coordinaat_van_midden", x_coordinaat_van_midden)
             print("y_coordinaat_van_midden", y_coordinaat_van_midden)
@@ -133,7 +133,7 @@ while True:
                 shape_name = ""
                 color = (0, 0, 0) #black.
 
-                area = cv2.contourArea(cnt)# area uin pixels!
+                area = cv2.contourArea(cnt)# area in pixels!
                 if area < 200: #ignore shapes detected under 200 pixels
                     continue
 #
